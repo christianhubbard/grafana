@@ -1,10 +1,10 @@
-![Grafana Logo (Light)](docs/logo-horizontal.png#gh-light-mode-only)
-![Grafana Logo (Dark)](docs/logo-horizontal-dark.png#gh-dark-mode-only)
+Grafana Logo (Light)
+Grafana Logo (Dark)
 
 The open-source platform for monitoring and observability
 
-[![License](https://img.shields.io/github/license/grafana/grafana)](LICENSE)
-[![Go Report Card](https://goreportcard.com/badge/github.com/grafana/grafana)](https://goreportcard.com/report/github.com/grafana/grafana)
+[License](LICENSE)
+[Go Report Card](https://goreportcard.com/report/github.com/grafana/grafana)
 
 Grafana allows you to query, visualize, alert on and understand your metrics no matter where they are stored. Create, explore, and share dashboards with your team and foster a data-driven culture:
 

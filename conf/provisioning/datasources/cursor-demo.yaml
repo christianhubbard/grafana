@@ -1,0 +1,11 @@
+apiVersion: 1
+
+datasources:
+  - name: Cursor Demo TestData
+    type: grafana-testdata-datasource
+    access: proxy
+    orgId: 1
+    uid: cursor-demo-testdata
+    isDefault: false
+    editable: true
+    jsonData: {}

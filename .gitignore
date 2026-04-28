@@ -105,6 +105,8 @@ conf/storage.ini
 
 /conf/provisioning/**/*.yaml
 !/conf/provisioning/**/sample.yaml
+!/conf/provisioning/dashboards/cursor-demo.yaml
+!/conf/provisioning/datasources/cursor-demo.yaml
 
 # sample yaml files
 !/conf/provisioning/sample/*.yaml
