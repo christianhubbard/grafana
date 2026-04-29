@@ -2,6 +2,7 @@ import { store } from '@grafana/data';
 import { type ExploreGraphStyle, EXPLORE_GRAPH_STYLES } from 'app/types/explore';
 
 const GRAPH_STYLE_KEY = 'grafana.explore.style.graph';
+const MOVING_AVG_ENABLED_KEY = 'grafana.explore.graph.movingAvg';
 export const storeGraphStyle = (graphStyle: string): void => {
   store.set(GRAPH_STYLE_KEY, graphStyle);
 };
@@ -23,4 +24,12 @@ const DEFAULT_GRAPH_STYLE: ExploreGraphStyle = 'lines';
 export const toGraphStyle = (data: unknown): ExploreGraphStyle => {
   const found = EXPLORE_GRAPH_STYLES.find((v) => v === data);
   return found ?? DEFAULT_GRAPH_STYLE;
+};
+
+export const storeMovingAvgEnabled = (enabled: boolean): void => {
+  store.set(MOVING_AVG_ENABLED_KEY, enabled);
+};
+
+export const loadMovingAvgEnabled = (): boolean => {
+  return store.getBool(MOVING_AVG_ENABLED_KEY, false);
 };

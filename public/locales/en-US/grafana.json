@@ -10602,6 +10602,8 @@
   "graph": {
     "container": {
       "content": "Rendering too many series in a single panel may impact performance and make data harder to read. Consider refining your queries.",
+      "moving-avg": "Moving avg",
+      "moving-avg-tooltip": "Shows a dashed trailing {{window}}-point moving average overlay for each series.",
       "show-all-series": "Show all {{length}}",
       "show-only-series": "Showing only {{MAX_NUMBER_OF_TIME_SERIES}} series",
       "title": "Graph"
@@ -16580,7 +16582,10 @@
   },
   "welcome": {
     "welcome-banner": {
+      "dark-mode": "Dark",
+      "light-mode": "Light",
       "need-help": "Need help?",
+      "theme-toggle": "Theme",
       "welcome-to-grafana": "Welcome to Grafana"
     }
   },
