@@ -41,6 +41,7 @@ import {
 import { useExploreDataLinkPostProcessor } from '../hooks/useExploreDataLinkPostProcessor';
 
 import { applyGraphStyle, applyThresholdsConfig } from './exploreGraphStyleUtils';
+import { addMovingAverageOverlay } from './movingAverage';
 import { useStructureRev } from './useStructureRev';
 
 interface Props {
@@ -56,6 +57,8 @@ interface Props {
   splitOpenFn: SplitOpen;
   onChangeTime: (timeRange: AbsoluteTimeRange) => void;
   graphStyle: ExploreGraphStyle;
+  /** When true, appends trailing moving-average series alongside each numeric series in Explore graphs only. */
+  showMovingAverage?: boolean;
   anchorToZero?: boolean;
   yAxisMaximum?: number;
   thresholdsConfig?: ThresholdsConfig;
@@ -78,6 +81,7 @@ export function ExploreGraph({
   onHiddenSeriesChanged,
   splitOpenFn,
   graphStyle,
+  showMovingAverage = false,
   tooltipDisplayMode = TooltipDisplayMode.Single,
   anchorToZero = false,
   yAxisMaximum,
@@ -89,6 +93,11 @@ export function ExploreGraph({
   queriesChangedIndexAtRun,
 }: Props) {
   const theme = useTheme2();
+
+  const displayFrames = useMemo(
+    () => (showMovingAverage ? addMovingAverageOverlay(data) : data),
+    [data, showMovingAverage]
+  );
 
   const fieldConfigRegistry = useMemo(
     () => createFieldConfigRegistry(getGraphFieldConfig(defaultGraphConfig), 'Explore'),
@@ -129,13 +138,13 @@ export function ExploreGraph({
   const dataWithConfig = useMemo(() => {
     return applyFieldOverrides({
       fieldConfig: styledFieldConfig,
-      data,
+      data: displayFrames,
       timeZone,
       replaceVariables: (value) => value, // We don't need proper replace here as it is only used in getLinks and we use getFieldLinks
       theme,
       fieldConfigRegistry,
     });
-  }, [fieldConfigRegistry, data, timeZone, theme, styledFieldConfig]);
+  }, [fieldConfigRegistry, displayFrames, timeZone, theme, styledFieldConfig]);
 
   const annotationsWithConfig = useMemo(() => {
     return applyFieldOverrides({
@@ -184,7 +193,7 @@ export function ExploreGraph({
       if (typeof label !== 'string') {
         return;
       }
-      setFieldConfig(seriesVisibilityConfigFactory(label, mode, fieldConfig, data));
+      setFieldConfig(seriesVisibilityConfigFactory(label, mode, fieldConfig, displayFrames));
     },
   };
 
@@ -196,7 +205,7 @@ export function ExploreGraph({
       });
       return;
     }
-    setFieldConfig(seriesVisibilityConfigFactory(name, mode, fieldConfig, data));
+    setFieldConfig(seriesVisibilityConfigFactory(name, mode, fieldConfig, displayFrames));
   }
 
   if (toggleLegendRef) {

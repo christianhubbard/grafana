@@ -48,7 +48,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       height: '100%',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: theme.spacing(0, 3),
+      padding: theme.spacing(2, 3),
 
       [theme.breakpoints.down('lg')]: {
         backgroundPosition: '0px',
@@ -58,7 +58,7 @@ const getStyles = (theme: GrafanaTheme2) => {
       },
 
       [theme.breakpoints.down('sm')]: {
-        padding: theme.spacing(0, 1),
+        padding: theme.spacing(1, 1),
       },
     }),
     title: css({

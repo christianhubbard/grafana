@@ -20,7 +20,7 @@ import { storeGraphStyle } from '../state/utils';
 
 import { ExploreGraph } from './ExploreGraph';
 import { ExploreGraphLabel } from './ExploreGraphLabel';
-import { loadGraphStyle } from './utils';
+import { loadGraphStyle, loadMovingAverageOverlay, storeMovingAverageOverlay } from './utils';
 
 const MAX_NUMBER_OF_TIME_SERIES = 20;
 
@@ -58,10 +58,16 @@ export const GraphContainer = ({
 }: Props) => {
   const [showAllSeries, toggleShowAllSeries] = useToggle(false);
   const [graphStyle, setGraphStyle] = useState(loadGraphStyle);
+  const [showMovingAverage, setShowMovingAverage] = useState(loadMovingAverageOverlay);
 
   const onGraphStyleChange = useCallback((graphStyle: ExploreGraphStyle) => {
     storeGraphStyle(graphStyle);
     setGraphStyle(graphStyle);
+  }, []);
+
+  const onMovingAverageOverlayChange = useCallback((enabled: boolean) => {
+    storeMovingAverageOverlay(enabled);
+    setShowMovingAverage(enabled);
   }, []);
 
   const slicedData = useMemo(() => {
@@ -93,11 +99,19 @@ export const GraphContainer = ({
       height={height}
       loadingState={loadingState}
       statusMessage={statusMessage}
-      actions={<ExploreGraphLabel graphStyle={graphStyle} onChangeGraphStyle={onGraphStyleChange} />}
+      actions={
+        <ExploreGraphLabel
+          graphStyle={graphStyle}
+          onChangeGraphStyle={onGraphStyleChange}
+          showMovingAverageOverlay={showMovingAverage}
+          onChangeMovingAverageOverlay={onMovingAverageOverlayChange}
+        />
+      }
     >
       {(innerWidth, innerHeight) => (
         <ExploreGraph
           graphStyle={graphStyle}
+          showMovingAverage={showMovingAverage}
           data={slicedData}
           height={innerHeight}
           width={innerWidth}

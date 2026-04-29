@@ -2,12 +2,22 @@ import { store } from '@grafana/data';
 import { type ExploreGraphStyle, EXPLORE_GRAPH_STYLES } from 'app/types/explore';
 
 const GRAPH_STYLE_KEY = 'grafana.explore.style.graph';
+const MOVING_AVERAGE_OVERLAY_KEY = 'grafana.explore.graph.movingAverageOverlay';
+
 export const storeGraphStyle = (graphStyle: string): void => {
   store.set(GRAPH_STYLE_KEY, graphStyle);
 };
 
 export const loadGraphStyle = (): ExploreGraphStyle => {
   return toGraphStyle(store.get(GRAPH_STYLE_KEY));
+};
+
+export const loadMovingAverageOverlay = (): boolean => {
+  return store.get(MOVING_AVERAGE_OVERLAY_KEY) === true;
+};
+
+export const storeMovingAverageOverlay = (enabled: boolean): void => {
+  store.set(MOVING_AVERAGE_OVERLAY_KEY, enabled);
 };
 
 const DEFAULT_GRAPH_STYLE: ExploreGraphStyle = 'lines';
