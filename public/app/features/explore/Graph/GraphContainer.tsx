@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useId, useMemo, useState } from 'react';
 import { useToggle } from 'react-use';
 
 import {
@@ -12,7 +12,14 @@ import {
   type TimeRange,
 } from '@grafana/data';
 import { Trans, t } from '@grafana/i18n';
-import { type GraphThresholdsStyleConfig, PanelChrome, type PanelChromeProps } from '@grafana/ui';
+import {
+  type GraphThresholdsStyleConfig,
+  InlineSwitch,
+  PanelChrome,
+  Stack,
+  Tooltip,
+  type PanelChromeProps,
+} from '@grafana/ui';
 import { type ExploreGraphStyle } from 'app/types/explore';
 
 import { LimitedDataDisclaimer } from '../LimitedDataDisclaimer';
@@ -20,7 +27,8 @@ import { storeGraphStyle } from '../state/utils';
 
 import { ExploreGraph } from './ExploreGraph';
 import { ExploreGraphLabel } from './ExploreGraphLabel';
-import { loadGraphStyle } from './utils';
+import { MOVING_AVG_WINDOW, addMovingAverageFrames } from './movingAverage';
+import { loadGraphStyle, loadMovingAvgEnabled, storeMovingAvgEnabled } from './utils';
 
 const MAX_NUMBER_OF_TIME_SERIES = 20;
 
@@ -56,17 +64,31 @@ export const GraphContainer = ({
   statusMessage,
   queriesChangedIndexAtRun,
 }: Props) => {
+  const movingAvgToggleId = useId();
   const [showAllSeries, toggleShowAllSeries] = useToggle(false);
   const [graphStyle, setGraphStyle] = useState(loadGraphStyle);
+  const [showMovingAvg, setShowMovingAvg] = useState(loadMovingAvgEnabled);
 
   const onGraphStyleChange = useCallback((graphStyle: ExploreGraphStyle) => {
     storeGraphStyle(graphStyle);
     setGraphStyle(graphStyle);
   }, []);
 
+  const onMovingAvgChange = useCallback(() => {
+    setShowMovingAvg((previous) => {
+      const next = !previous;
+      storeMovingAvgEnabled(next);
+      return next;
+    });
+  }, []);
+
   const slicedData = useMemo(() => {
     return showAllSeries ? data : data.slice(0, MAX_NUMBER_OF_TIME_SERIES);
   }, [data, showAllSeries]);
+
+  const dataWithMovingAvg = useMemo(() => {
+    return showMovingAvg ? addMovingAverageFrames(slicedData) : slicedData;
+  }, [showMovingAvg, slicedData]);
 
   return (
     <PanelChrome
@@ -93,12 +115,34 @@ export const GraphContainer = ({
       height={height}
       loadingState={loadingState}
       statusMessage={statusMessage}
-      actions={<ExploreGraphLabel graphStyle={graphStyle} onChangeGraphStyle={onGraphStyleChange} />}
+      actions={
+        <Stack gap={2} justifyContent={'flex-end'} alignItems={'center'} direction={'row'}>
+          <Tooltip
+            content={t(
+              'graph.container.moving-avg-tooltip',
+              'Shows a dashed trailing {{window}}-point moving average overlay for each series.',
+              { window: MOVING_AVG_WINDOW }
+            )}
+          >
+            <span>
+              <InlineSwitch
+                transparent
+                showLabel
+                label={t('graph.container.moving-avg', 'Moving avg')}
+                value={showMovingAvg}
+                onChange={onMovingAvgChange}
+                id={movingAvgToggleId}
+              />
+            </span>
+          </Tooltip>
+          <ExploreGraphLabel graphStyle={graphStyle} onChangeGraphStyle={onGraphStyleChange} />
+        </Stack>
+      }
     >
       {(innerWidth, innerHeight) => (
         <ExploreGraph
           graphStyle={graphStyle}
-          data={slicedData}
+          data={dataWithMovingAvg}
           height={innerHeight}
           width={innerWidth}
           timeRange={timeRange}

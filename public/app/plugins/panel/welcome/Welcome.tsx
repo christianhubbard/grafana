@@ -1,8 +1,9 @@
 import { css } from '@emotion/css';
 
 import { type GrafanaTheme2 } from '@grafana/data';
-import { Trans } from '@grafana/i18n';
-import { TextLink, useStyles2 } from '@grafana/ui';
+import { Trans, t } from '@grafana/i18n';
+import { RadioButtonGroup, TextLink, useStyles2, useTheme2 } from '@grafana/ui';
+import { changeTheme } from 'app/core/services/theme';
 
 const helpOptions = [
   { value: 0, label: 'Documentation', href: 'https://grafana.com/docs/grafana/latest' },
@@ -13,12 +14,31 @@ const helpOptions = [
 
 export const WelcomeBanner = () => {
   const styles = useStyles2(getStyles);
+  const theme = useTheme2();
+  const selectedTheme = theme.isDark ? 'dark' : 'light';
+
+  const onThemeChange = (themeId: string) => {
+    void changeTheme(themeId);
+  };
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>
-        <Trans i18nKey="welcome.welcome-banner.welcome-to-grafana">Welcome to Grafana</Trans>
-      </h1>
+      <div>
+        <h1 className={styles.title}>
+          <Trans i18nKey="welcome.welcome-banner.welcome-to-grafana">Welcome to Grafana</Trans>
+        </h1>
+        <div className={styles.themeToggle} aria-label={t('welcome.welcome-banner.theme-toggle', 'Theme')}>
+          <RadioButtonGroup
+            size="sm"
+            value={selectedTheme}
+            options={[
+              { label: t('welcome.welcome-banner.light-mode', 'Light'), value: 'light' },
+              { label: t('welcome.welcome-banner.dark-mode', 'Dark'), value: 'dark' },
+            ]}
+            onChange={onThemeChange}
+          />
+        </div>
+      </div>
       <div className={styles.help}>
         <h2 className={styles.helpText}>
           <Trans i18nKey="welcome.welcome-banner.need-help">Need help?</Trans>
@@ -74,6 +94,9 @@ const getStyles = (theme: GrafanaTheme2) => {
       [theme.breakpoints.down('sm')]: {
         fontSize: theme.typography.h3.fontSize,
       },
+    }),
+    themeToggle: css({
+      marginTop: theme.spacing(1),
     }),
     help: css({
       display: 'flex',
