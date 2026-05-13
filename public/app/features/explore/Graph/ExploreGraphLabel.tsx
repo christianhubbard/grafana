@@ -1,5 +1,6 @@
 import { type SelectableValue } from '@grafana/data';
-import { RadioButtonGroup } from '@grafana/ui';
+import { t } from '@grafana/i18n';
+import { InlineSwitch, RadioButtonGroup, Stack } from '@grafana/ui';
 import { EXPLORE_GRAPH_STYLES, type ExploreGraphStyle } from 'app/types/explore';
 
 const ALL_GRAPH_STYLE_OPTIONS: Array<SelectableValue<ExploreGraphStyle>> = EXPLORE_GRAPH_STYLES.map((style) => ({
@@ -11,11 +12,24 @@ const ALL_GRAPH_STYLE_OPTIONS: Array<SelectableValue<ExploreGraphStyle>> = EXPLO
 type Props = {
   graphStyle: ExploreGraphStyle;
   onChangeGraphStyle: (style: ExploreGraphStyle) => void;
+  showMovingAverageOverlay: boolean;
+  onChangeMovingAverageOverlay: (enabled: boolean) => void;
 };
 
 export function ExploreGraphLabel(props: Props) {
-  const { graphStyle, onChangeGraphStyle } = props;
+  const { graphStyle, onChangeGraphStyle, showMovingAverageOverlay, onChangeMovingAverageOverlay } = props;
   return (
-    <RadioButtonGroup size="sm" options={ALL_GRAPH_STYLE_OPTIONS} value={graphStyle} onChange={onChangeGraphStyle} />
+    <Stack direction="row" gap={2} justifyContent="flex-end" alignItems="center" wrap>
+      <RadioButtonGroup size="sm" options={ALL_GRAPH_STYLE_OPTIONS} value={graphStyle} onChange={onChangeGraphStyle} />
+      <InlineSwitch
+        transparent
+        label={t('explore.graph-label.moving-average', 'Moving average')}
+        showLabel
+        value={showMovingAverageOverlay}
+        onChange={(e) => {
+          onChangeMovingAverageOverlay(e.currentTarget.checked);
+        }}
+      />
+    </Stack>
   );
 }
